@@ -36,14 +36,6 @@ class TVShowJokeCreatorTasks:
             Your tasks:
             1. Evaluate each joke from the previous 'joke_creation' task for quality, relevance to the show, and appropriateness
             2. Select the best jokes (at least 3, but no more than 10)
-            3. Use the 'write_jokes_to_markdown_file' tool to save the jokes. You need to provide:
-               - tv_show: "{tv_show}"
-               - jokes: A list of the selected jokes
-               - file_path: "{tv_show.lower().replace(' ', '_')}_jokes.md"
-            4. Ensure the markdown file is properly formatted and readable
-            5. After using the tool, confirm that the file was created successfully
-
-
         """),
         agent=agent
         )

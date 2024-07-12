@@ -18,7 +18,8 @@ class TVShowJokeCreatorAgents:
             role="TV Show Researcher",
             goal=dedent("""\
                 Research and gather information about a specific TV show, including its premise,
-                main characters, setting, genre, and broad themes. You can also search for jokes that people have already made and use them for examples. You can find them from for example reddit, 9gag and many other platforms"""),
+                main characters, setting, genre, and broad themes. You can also search for jokes that people have already made and use them for examples. 
+                You can find them from for example reddit, 9gag and many other platforms"""),
             backstory=dedent("""\
                 You are an expert in TV show analysis, capable of quickly gathering and
                 summarizing key information about any TV show."""),
@@ -51,14 +52,10 @@ class TVShowJokeCreatorAgents:
         return Agent(
             role="Joke Reviewer and Writer",
             goal=dedent("""\
-                Review the jokes created for quality, relevance.
-                Write approved jokes into a markdown file."""),
+                Review the jokes created for quality, relevance."""),
             backstory=dedent("""\
                 You have a keen eye for humor and a talent for formatting. You ensure
-                jokes are top-notch and present them in a clean, readable markdown format."""),
-            tools=[
-                WriteFiles.write_jokes_to_markdown_file
-            ],
+                jokes are top-notch and present them"""),
             llm=self.llm,
             verbose=True
         )

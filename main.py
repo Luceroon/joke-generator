@@ -10,8 +10,9 @@ load_dotenv()
 agents = TVShowJokeCreatorAgents()
 tasks = TVShowJokeCreatorTasks()
 
-tv_show = "rantabaari"
-joke_requirements = f"Clever jokes that reference the show's medical themes, character quirks, and catchphrases. Suitable for fans of {tv_show}."
+tv_show = "snowfall"
+joke_requirements = f"""Clever jokes that reference the show's themes, character quirks, and catchphrases. Suitable for fans of {tv_show}. 
+                    Do the searches in the original language of the show. The jokes need to be atleast 100 words long"""
 
 tv_show_researcher = agents.tv_show_researcher_agent()
 tv_show_joke_creator = agents.tv_show_joke_creator_agent()
