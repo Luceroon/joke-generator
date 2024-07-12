@@ -1,36 +1,49 @@
 from crewai import Task
 from textwrap import dedent
 
-class JokesCreatorTasks:
-    def joke_analysis(self, agent, jokes_from, jokes_details):
+class TVShowJokeCreatorTasks:
+    def tv_show_research(self, agent, tv_show):
         return Task(description=dedent(f"""\
-            Find and analyze the jokes from media {jokes_from} using the details: {jokes_details}.
-            Look for patterns, common themes, and humor techniques. 
-            Get examples from reddit and all over the internet from people who have made jokes about the media that we are analysing. It's currenlty 2024. Find atleast 30 good sources then you can move on to another task.
+            Research the TV show "{tv_show}". Gather information about:
+            1. The show's premise
+            2. Main characters and their traits
+            3. Setting and time period
+            4. Recurring themes or plot devices
+            5. Popular catchphrases or running gags
+            6. Any other unique elements that could inspire jokes
         """),
         agent=agent
         )
     
-    def joke_creation(self, agent, jokes_from, jokes_details):
+    def joke_creation(self, agent, tv_show, joke_requirements):
         return Task(description=dedent(f"""\
-            Create new jokes based on the inspiration and details provided: {jokes_details}.
-            Ensure the jokes are fresh, humorous, and relevant to the target audience.
+            Create original jokes inspired by the TV show "{tv_show}" based on the research provided.
+            Requirements: {joke_requirements}
+            
+            Guidelines:
+            1. Create at least 5 jokes
+            2. Ensure jokes are original and not copied from existing sources
+            3. Reference character traits, plot elements, or themes from the show
+            5. Make the jokes clever and appealing to fans of the show
         """),
         agent=agent
         )
     
-    def joke_scribing(self, agent):
-        return Task(description=dedent("""\
-            Write down the jokes made in joke_creation
-        """),
-        agent=agent
-        )
-    
-    def joke_review(self, agent, jokes_from, jokes_details):
+    def joke_review_and_write(self, agent, tv_show):
         return Task(description=dedent(f"""\
-            Review the jokes created by Creative Joke Creator and make sure that the jokes are the best possible. 
-            Ask clarifying questions or delegate follow-up work if necessary to make decisions. 
-            When delegating work, send the full draft as part of the information.
+            Review the jokes created for "{tv_show}" in the previous task and write them in a markdown file.
+
+            Your tasks:
+            1. Evaluate each joke from the previous 'joke_creation' task for quality, relevance to the show, and appropriateness
+            2. Select the best jokes (at least 3, but no more than 10)
+            3. Use the 'write_jokes_to_markdown_file' tool to save the jokes. You need to provide:
+               - tv_show: "{tv_show}"
+               - jokes: A list of the selected jokes
+               - file_path: "{tv_show.lower().replace(' ', '_')}_jokes.md"
+            4. Ensure the markdown file is properly formatted and readable
+            5. After using the tool, confirm that the file was created successfully
+
+
         """),
         agent=agent
         )

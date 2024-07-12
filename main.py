@@ -1,47 +1,61 @@
-from agents import JokesCreatorAgents
-from tasks import JokesCreatorTasks
-from crewai import Crew
+from agents import TVShowJokeCreatorAgents  # Updated class name
+from tasks import TVShowJokeCreatorTasks    # Updated class name
+from crewai import Crew, Process
+from langchain_groq import ChatGroq
 from dotenv import load_dotenv
+import os
+
 load_dotenv()
 
-agents = JokesCreatorAgents()
-tasks = JokesCreatorTasks()
+agents = TVShowJokeCreatorAgents()
+tasks = TVShowJokeCreatorTasks()
 
-jokes_from = "House M.D"
-jokes_details = f"Funny jokes that can only be understood by people who know {jokes_from}. Funny jokes are often satire and ironic."
+tv_show = "rantabaari"
+joke_requirements = f"Clever jokes that reference the show's medical themes, character quirks, and catchphrases. Suitable for fans of {tv_show}."
 
-joke_inspiration_agent = agents.joke_inspiration_agent()
-creative_joke_creator_agent = agents.creative_joke_creator_agent()
-joke_scriber_agent = agents.joke_scriber_agent()
-chief_creative_director_agent = agents.chief_creative_diretor_agent()
+tv_show_researcher = agents.tv_show_researcher_agent()
+tv_show_joke_creator = agents.tv_show_joke_creator_agent()
+joke_reviewer_and_writer = agents.joke_reviewer_and_writer_agent()
+chief_creative_director = agents.chief_creative_director_agent()
 
-inspiration = tasks.joke_analysis(joke_inspiration_agent, jokes_from, jokes_details)
-creation = tasks.joke_creation(creative_joke_creator_agent, jokes_from, jokes_details)
-scribing = tasks.joke_scribing(joke_inspiration_agent)
-review = tasks.joke_review(chief_creative_director_agent, jokes_from, jokes_details)
+research = tasks.tv_show_research(tv_show_researcher, tv_show)
+joke_creation = tasks.joke_creation(tv_show_joke_creator, tv_show, joke_requirements)
+review_and_write = tasks.joke_review_and_write(joke_reviewer_and_writer, tv_show)
 
-
-copy_crew = Crew(
+tv_show_joke_crew = Crew(
     agents=[
-        joke_inspiration_agent,
-        creative_joke_creator_agent,
-        #joke_scriber_agent,
-        chief_creative_director_agent
+        tv_show_researcher,
+        tv_show_joke_creator,
+        joke_reviewer_and_writer,
+        chief_creative_director
     ],
     tasks=[
-        inspiration,
-        creation,
-        review,
-        #scribing
+        research,
+        joke_creation,
+        review_and_write
     ],
+    memory=True,
     verbose=True,
-    # Remove this when running locally. This helps prevent rate limiting with groq.
-    max_rpm=4
+    process=Process.hierarchical,
+    max_rpm=4,
+    manager_llm=ChatGroq(
+        api_key=os.getenv("GROQ_API_KEY"),
+        model="llama3-70b-8192"
+    ),
+    manager_agent=chief_creative_director
 )
 
-jokes_copy = copy_crew.kickoff()
+jokes_result = tv_show_joke_crew.kickoff()
 
-# Print results
 print("\n\n########################")
-print("## Here is the result")
-print(jokes_copy)
+print("## Here are the TV show jokes:")
+print(jokes_result)
+
+
+file_name = f"{tv_show.lower().replace(' ', '_')}_jokes.md"
+if os.path.exists(file_name):
+    print(f"\nJokes have been written to {file_name}")
+    with open(file_name, 'r') as f:
+        print(f.read())
+else:
+    print(f"\nWarning: {file_name} was not created.")

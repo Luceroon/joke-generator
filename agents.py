@@ -2,11 +2,10 @@ import os
 from textwrap import dedent
 from crewai import Agent
 from langchain_groq import ChatGroq
-from langchain_openai import ChatOpenAI
 from tools.search_tools import SearchTools
 from tools.write_files import WriteFiles
 
-class JokesCreatorAgents:
+class TVShowJokeCreatorAgents:
 
     def __init__(self):
         self.llm = ChatGroq(
@@ -14,66 +13,69 @@ class JokesCreatorAgents:
             model="llama3-70b-8192"
         )
 
-    def joke_inspiration_agent(self):
+    def tv_show_researcher_agent(self):
         return Agent(
-            role="Lead joke inspiration finder",
+            role="TV Show Researcher",
             goal=dedent("""\
-                Find amazing and funny jokes and quotes. After that conduct amazing analysis of the jokes found from the internet for example reddit, providing in-depth insights to guide creating new jokes"""),
+                Research and gather information about a specific TV show, including its premise,
+                main characters, setting, genre, and broad themes. You can also search for jokes that people have already made and use them for examples. You can find them from for example reddit, 9gag and many other platforms"""),
             backstory=dedent("""\
-				As the lead joke inspiration finder, you specialize in finding examples of funny jokes that others can use when creating their own jokes."""),
+                You are an expert in TV show analysis, capable of quickly gathering and
+                summarizing key information about any TV show."""),
             tools=[
                 SearchTools.search_internet,
-                #SearchTools.search_reddit
             ],
             allow_delegation=False,
             llm=self.llm,
             verbose=True
         )
     
-    def creative_joke_creator_agent(self):
+    def tv_show_joke_creator_agent(self):
         return Agent(
-            role="Creative Joke Creator",
+            role="TV Show Joke Creator",
             goal=dedent("""\
-				Develop funny, ironic and satire jokes that match the audience and needs intellect to understand them. Use Lead Joke Inspiration finder for inspiration about the jokes."""),
+                Create funny jokes inspired by the TV show information provided.
+                The jokes should be clever, relevant to the show's themes, and appeal to fans."""),
             backstory=dedent("""\
-				As a Creative Joke Creator at a top-tier joke platform, you excel in crafting jokes that makes the target audience laugh."""),
+                You are a witty comedy writer specializing in creating jokes inspired by
+                TV shows. You excel at finding humor in a show's unique elements without
+                directly copying its content."""),
             tools=[
                 SearchTools.search_internet,
-                #SearchTools.search_reddit,
             ],
             llm=self.llm,
             verbose=True
         )
 
-    def joke_scriber_agent(self):
+    def joke_reviewer_and_writer_agent(self):
         return Agent(
-            role="Joke Scriber",
+            role="Joke Reviewer and Writer",
             goal=dedent("""\
-                Write down the jokes created by Creative Joke Creator."""),
+                Review the jokes created for quality, relevance.
+                Write approved jokes into a markdown file."""),
             backstory=dedent("""\
-                You are the best and fastest scriber."""),
+                You have a keen eye for humor and a talent for formatting. You ensure
+                jokes are top-notch and present them in a clean, readable markdown format."""),
             tools=[
-                WriteFiles.write_jokes_to_file
+                WriteFiles.write_jokes_to_markdown_file
             ],
             llm=self.llm,
             verbose=True
         )
     
-    def chief_creative_diretor_agent(self):
+    def chief_creative_director_agent(self):
         return Agent(
             role="Chief Creative Director",
             goal=dedent("""\
-					Oversee the work done by your team to make sure it's the best
-					possible and make sure that the jokes land on the audience,
-					ask clarifying question or delegate follow up work if necessary to make
-					decisions. But don't be too picky so everything will be much faster"""),
+                Oversee the entire joke creation process, ensuring high-quality output
+                that's both funny and respectful of the source material. Provide guidance
+                and feedback to the team as needed."""),
             backstory=dedent("""\
-					You're the Chief Content Officer of jokes creation specialized in product jokes and what makes people laugh. You're working on a new
-					audience, trying to make sure your team is crafting the best possible
-					content for the audience"""),
+                You're a seasoned comedy producer with a deep understanding of TV shows
+                and what makes audiences laugh. You guide your team to create the best
+                possible TV show-inspired jokes."""),
             tools=[
                 SearchTools.search_internet,
-                #SearchTools.search_reddit
             ],
             llm=self.llm,
             verbose=True
